@@ -1,1 +1,44 @@
-<p>reactive-form works!</p>
+<!-- FormControl的使用，不能用在FormGroup 的内部，只能用在外部
+  但是这个username没有加入到数据模型中formModel，现在如果要加到数据模型中，就需要把ts中username 移到formModel 中，然后把下面一行在html中也移到formModel包裹的模块中
+  然后用formControlName="username"去绑定
+-->
+<!-- <input [formControl]="username" > -->
+
+<form [formGroup]="formModel" (submit)="onSubmit()">
+  <!--
+    3：在模板中声明一个div调用formGroupName来指定后台的formGroup的名称
+    这里需要注意的是formGroup 是后台的一个属性，所以要用属性绑定的语法[formGroup]="formModel"， 而formGroupName这个指令的值是一个字符串
+    所以不要用属性绑定语法，直接写一个属性名字的字符串dateRange就可以了，
+
+    4： formControlName必须声明在一个formGroup内，来连接一个formGroup中的formControl 和页面上的dom元素，比如说
+    dateRange: new FormGroup({
+    form: new FormControl(),
+    to: new FormControl(),
+    })
+    这个FormGroup里面有两个FormControl，对应的页面上有两个input，使用formControlName把input连接到ts中两个FormControl上，
+   -->
+   <input formControlName="username" >
+  <div formGroupName="dateRange">
+    起始日期：<input type="date" formControlName="from">
+    截止日期：<input type="date" formControlName="to">
+  </div>
+  <div>
+    <ul formArrayName="emails">
+      <!--
+        5：ngFor 需要循环的是ts中emails的FormArray 中FormControl 的集合，emails是formModel中的一个属性get(),
+        emails集合FormControl使用control来控制的，FormControl没有名字，只有顺序号，所以还需要一个下标
+        声明一个变量i，他的值就是产生循环下标的值，用formControlName把input 和循环下标绑定到一起，这里需要用到属性绑定到语法[formControlName]
+
+        6：点击增加emails按钮的时候，通过像FormArray的emails数组里面去添加一个formControl 元素，来产生一个新的input块：
+        首先要绑定click事件(click)="addEmail()",
+
+       -->
+      <li *ngFor="let item of this.formModel.get('emails').controls; let i=index;">
+        <input type="text" [formControlName]="i">
+      </li>
+    </ul>
+    <button type="button" (click)="addEmail()">增加emails</button>
+  </div>
+  <button type="submit">保存</button>
+
+</form>
